@@ -1,10 +1,10 @@
-package com.shopping.customer;
+package com.shopping.shopping;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class InvoiceServiceApplicationTests {
+class ShoppingServiceApplicationTests {
 
 	@Test
 	void contextLoads() {

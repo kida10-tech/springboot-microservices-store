@@ -1,19 +1,20 @@
-DROP TABLE IF EXISTS region;
+DROP TABLE IF EXISTS category;
 
-CREATE TABLE region (
+CREATE TABLE category (
   id BIGINT AUTO_INCREMENT  PRIMARY KEY,
   name VARCHAR(250) NOT NULL
 );
 
-DROP TABLE IF EXISTS customer;
 
-CREATE TABLE customer (
+DROP TABLE IF EXISTS product;
+
+CREATE TABLE product (
   id BIGINT AUTO_INCREMENT  PRIMARY KEY,
-  number_id VARCHAR(8) NOT NULL,
-  first_name VARCHAR(250) NOT NULL,
-  last_name VARCHAR(250) NOT NULL,
-  email VARCHAR(250) NOT NULL,
-  photo_url VARCHAR(250) NOT NULL,
-  region_id BIGINT,
-  state VARCHAR(250) NOT NULL
+  name VARCHAR(250) NOT NULL,
+  description VARCHAR(250) NOT NULL,
+  stock INTEGER,
+  price DOUBLE,
+  status VARCHAR(250) NOT NULL,
+  create_at TIMESTAMP,
+  category_id BIGINT
 );

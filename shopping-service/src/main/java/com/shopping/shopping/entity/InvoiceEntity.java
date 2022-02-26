@@ -5,16 +5,15 @@ import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "invoice")
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
+@Table(name = "invoice")
 @Entity
 public class InvoiceEntity {
 
@@ -22,8 +21,8 @@ public class InvoiceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "invoice_number")
-    private String invoiceNumber;
+    @Column(name = "number_invoice")
+    private String numberInvoice;
 
     private String description;
 
@@ -33,20 +32,23 @@ public class InvoiceEntity {
     @Column(name = "create_at")
     private LocalDate createAt;
 
+
+
     @Valid
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id")
     private List<InvoiceItemEntity> items;
 
     private String state;
 
-    public InvoiceEntity() {
+    public InvoiceEntity(){
         items = new ArrayList<>();
     }
 
     @PrePersist
     public void prePersist() {
-        createAt = LocalDate.now();
+        this.createAt = LocalDate.now();
     }
+
 }

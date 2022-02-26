@@ -1,7 +1,8 @@
-package com.shopping.customer;
+package com.shopping.shopping;
 
-import com.shopping.customer.entity.InvoiceEntity;
-import com.shopping.customer.repository.InvoiceRepository;
+import com.shopping.shopping.entity.InvoiceEntity;
+import com.shopping.shopping.entity.InvoiceItemsEntity;
+import com.shopping.shopping.repository.InvoiceRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,26 +12,26 @@ import java.time.LocalDate;
 import java.util.List;
 
 @DataJpaTest
-public class InvoiceRepositoryMockTest {
+public class ProductRepositoryMockTest {
 
     @Autowired
-    private InvoiceRepository customerRepository;
+    private InvoiceRepository productRepository;
 
     @Test
     public void whenFindByCategory_thenReturnProductList() {
 
-        InvoiceEntity product = InvoiceEntity.builder()
+        InvoiceItemsEntity product = InvoiceItemsEntity.builder()
                 .name("computer")
-                .category(RegionEntity.builder().id(1l).build())
+                .category(InvoiceEntity.builder().id(1l).build())
                 .description("it's a computer")
                 .stock(Integer.parseInt("10"))
                 .price(Double.parseDouble("1090.90"))
                 .status("Created")
                 .createAt(LocalDate.now()).build();
 
-        customerRepository.save(product);
+        productRepository.save(product);
 
-        List<InvoiceEntity> found = customerRepository.findByCategory(product.getCategory());
+        List<InvoiceItemsEntity> found = productRepository.findByCategory(product.getCategory());
 
         Assertions.assertThat(found.size()).isEqualTo(2);
 

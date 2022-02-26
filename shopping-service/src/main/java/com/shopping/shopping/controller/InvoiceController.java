@@ -3,6 +3,7 @@ package com.shopping.shopping.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shopping.shopping.entity.InvoiceEntity;
+import com.shopping.shopping.error.ErrorMessage;
 import com.shopping.shopping.service.InvoiceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,88 +25,84 @@ import java.util.stream.Collectors;
 public class InvoiceController {
 
     @Autowired
-    private InvoiceService invoiceService;
+    InvoiceService invoiceService;
 
     @GetMapping
     public ResponseEntity<List<InvoiceEntity>> listAllInvoices() {
-        List<InvoiceEntity> invoices = invoiceService.findAllInvoice();
-        if(invoices.isEmpty()) {
-            return ResponseEntity.notFound().build();
+        List<InvoiceEntity> invoices = invoiceService.findAllInvoices();
+        if (invoices.isEmpty()) {
+            return  ResponseEntity.noContent().build();
         }
-        return ResponseEntity.ok(invoices);
+        return  ResponseEntity.ok(invoices);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<InvoiceEntity> getInvoice(@PathVariable("id") Long id) {
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<InvoiceEntity> getInvoice(@PathVariable("id") long id) {
         log.info("Fetching Invoice with id {}", id);
-        InvoiceEntity invoice = invoiceService.getInvoice(id);
-        if(invoice == null) {
+        InvoiceEntity invoice  = invoiceService.getInvoice(id);
+        if (null == invoice) {
             log.error("Invoice with id {} not found.", id);
-            return ResponseEntity.notFound().build();
+            return  ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(invoice);
+        return  ResponseEntity.ok(invoice);
     }
 
     @PostMapping
     public ResponseEntity<InvoiceEntity> createInvoice(@Valid @RequestBody InvoiceEntity invoice, BindingResult result) {
-
-        log.info("Creating Invoice: {}", invoice);
-
-        if(result.hasErrors()) {
+        log.info("Creating Invoice : {}", invoice);
+        if (result.hasErrors()){
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, this.formatMessage(result));
         }
-
         InvoiceEntity newInvoice = invoiceService.createInvoice(invoice);
-        return ResponseEntity.status(HttpStatus.CREATED).body(newInvoice);
+
+        return  ResponseEntity.status( HttpStatus.CREATED).body(newInvoice);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<InvoiceEntity> updateCustomer(@PathVariable("id") Long id, @RequestBody InvoiceEntity invoice) {
-
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<InvoiceEntity> updateInvoice(@PathVariable("id") long id, @RequestBody InvoiceEntity invoice) {
         log.info("Updating Invoice with id {}", id);
 
-        InvoiceEntity invoiceFound = invoiceService.updateInvoice(invoice);
-        if(invoiceFound == null) {
+        invoice.setId(id);
+        InvoiceEntity currentInvoice = invoiceService.updateInvoice(invoice);
+
+        if (currentInvoice == null) {
             log.error("Unable to update. Invoice with id {} not found.", id);
-            return ResponseEntity.notFound().build();
+            return  ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(invoiceFound);
+        return  ResponseEntity.ok(currentInvoice);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<InvoiceEntity> deleteInvoice(@PathVariable("id") Long id) {
-
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<InvoiceEntity> deleteInvoice(@PathVariable("id") long id) {
         log.info("Fetching & Deleting Invoice with id {}", id);
+
         InvoiceEntity invoice = invoiceService.getInvoice(id);
-        if(invoice == null) {
+        if (invoice == null) {
             log.error("Unable to delete. Invoice with id {} not found.", id);
-            return ResponseEntity.notFound().build();
+            return  ResponseEntity.notFound().build();
         }
         invoice = invoiceService.deleteInvoice(invoice);
         return ResponseEntity.ok(invoice);
     }
 
-    private String formatMessage(BindingResult result) {
-        List<Map<String, String>> errors = result.getFieldErrors().stream()
-                .map(err -> {
-                    Map<String,String> error = new HashMap<>();
+    private String formatMessage( BindingResult result){
+        List<Map<String,String>> errors = result.getFieldErrors().stream()
+                .map(err ->{
+                    Map<String,String> error =  new HashMap<>();
                     error.put(err.getField(), err.getDefaultMessage());
-                    return error;})
-                .collect(Collectors.toList());
+                    return error;
 
+                }).collect(Collectors.toList());
         ErrorMessage errorMessage = ErrorMessage.builder()
                 .code("01")
-                .messages(errors)
-                .build();
-
+                .messages(errors).build();
         ObjectMapper mapper = new ObjectMapper();
-        String jsonString = "";
+        String jsonString="";
         try {
             jsonString = mapper.writeValueAsString(errorMessage);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
         return jsonString;
-
     }
 }
