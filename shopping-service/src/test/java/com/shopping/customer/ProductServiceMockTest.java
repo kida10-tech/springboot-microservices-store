@@ -1,10 +1,9 @@
-package com.shopping.shopping;
+package com.shopping.customer;
 
-import com.shopping.shopping.entity.RegionEntity;
-import com.shopping.shopping.entity.CustomerEntity;
-import com.shopping.shopping.repository.CustomerRepository;
-import com.shopping.shopping.service.CustomerService;
-import com.shopping.shopping.service.impl.CustomerServiceImpl;
+import com.shopping.customer.entity.InvoiceEntity;
+import com.shopping.customer.repository.InvoiceRepository;
+import com.shopping.customer.service.InvoiceService;
+import com.shopping.customer.service.impl.InvoiceServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,15 +18,15 @@ import java.util.Optional;
 public class ProductServiceMockTest {
 
     @Mock
-    private CustomerRepository customerRepository;
+    private InvoiceRepository customerRepository;
 
-    private CustomerService productService;
+    private InvoiceService productService;
 
     @BeforeEach()
     public void setup() {
         MockitoAnnotations.openMocks(this);
-        productService = new CustomerServiceImpl(customerRepository);
-        CustomerEntity computer = CustomerEntity.builder()
+        productService = new InvoiceServiceImpl(customerRepository);
+        InvoiceEntity computer = InvoiceEntity.builder()
                 .id(1L)
                 .firstName("Diego")
                 .category(RegionEntity.builder().id(1L).build())
@@ -42,13 +41,13 @@ public class ProductServiceMockTest {
 
     @Test
     public void whenValidGetId_thenReturnProduct() {
-        CustomerEntity found = productService.getProduct(1L);
+        InvoiceEntity found = productService.getProduct(1L);
         Assertions.assertThat(found.getName()).isEqualTo("computer");
     }
 
     @Test
     public void whenValidUpdateStock_thenReturnNewStock() {
-        CustomerEntity newStock = productService.updateStock(1L, Integer.parseInt("5"));
+        InvoiceEntity newStock = productService.updateStock(1L, Integer.parseInt("5"));
         Assertions.assertThat(newStock.getStock()).isEqualTo(10);
     }
 }

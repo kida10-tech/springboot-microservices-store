@@ -1,11 +1,11 @@
-package com.shopping.shopping.controller;
+package com.shopping.customer.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shopping.shopping.entity.RegionEntity;
-import com.shopping.shopping.entity.CustomerEntity;
-import com.shopping.shopping.error.ErrorMessage;
-import com.shopping.shopping.service.CustomerService;
+import com.shopping.customer.entity.RegionEntity;
+import com.shopping.customer.entity.CustomerEntity;
+import com.shopping.customer.error.ErrorMessage;
+import com.shopping.customer.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RestController
 @RequestMapping("/api/customers")
-public class ProductController {
+public class CustomerController {
 
     @Autowired
     private CustomerService customerService;

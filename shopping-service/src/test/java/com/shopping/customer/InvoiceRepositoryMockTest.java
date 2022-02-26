@@ -1,8 +1,7 @@
-package com.shopping.shopping;
+package com.shopping.customer;
 
-import com.shopping.shopping.entity.RegionEntity;
-import com.shopping.shopping.entity.CustomerEntity;
-import com.shopping.shopping.repository.CustomerRepository;
+import com.shopping.customer.entity.InvoiceEntity;
+import com.shopping.customer.repository.InvoiceRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,15 +11,15 @@ import java.time.LocalDate;
 import java.util.List;
 
 @DataJpaTest
-public class CustomerRepositoryMockTest {
+public class InvoiceRepositoryMockTest {
 
     @Autowired
-    private CustomerRepository customerRepository;
+    private InvoiceRepository customerRepository;
 
     @Test
     public void whenFindByCategory_thenReturnProductList() {
 
-        CustomerEntity product = CustomerEntity.builder()
+        InvoiceEntity product = InvoiceEntity.builder()
                 .name("computer")
                 .category(RegionEntity.builder().id(1l).build())
                 .description("it's a computer")
@@ -31,7 +30,7 @@ public class CustomerRepositoryMockTest {
 
         customerRepository.save(product);
 
-        List<CustomerEntity> found = customerRepository.findByCategory(product.getCategory());
+        List<InvoiceEntity> found = customerRepository.findByCategory(product.getCategory());
 
         Assertions.assertThat(found.size()).isEqualTo(2);
 
