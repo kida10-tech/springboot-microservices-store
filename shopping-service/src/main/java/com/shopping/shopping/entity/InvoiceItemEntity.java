@@ -1,6 +1,7 @@
 package com.shopping.shopping.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.shopping.shopping.model.Product;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,9 +28,11 @@ public class InvoiceItemEntity  {
     @Column(name = "product_id")
     private Long productId;
 
-
     @Transient
     private Double subTotal;
+
+    @Transient
+    private Product product;
 
     public Double getSubTotal(){
         if (this.price >0  && this.quantity >0 ){

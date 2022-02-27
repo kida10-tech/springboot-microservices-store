@@ -2,6 +2,8 @@ package com.shopping.shopping.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.shopping.shopping.client.CustomerClient;
+import com.shopping.shopping.client.ProductClient;
 import com.shopping.shopping.entity.InvoiceEntity;
 import com.shopping.shopping.error.ErrorMessage;
 import com.shopping.shopping.service.InvoiceService;
@@ -25,7 +27,7 @@ import java.util.stream.Collectors;
 public class InvoiceController {
 
     @Autowired
-    InvoiceService invoiceService;
+    private InvoiceService invoiceService;
 
     @GetMapping
     public ResponseEntity<List<InvoiceEntity>> listAllInvoices() {
@@ -55,7 +57,7 @@ public class InvoiceController {
         }
         InvoiceEntity newInvoice = invoiceService.createInvoice(invoice);
 
-        return  ResponseEntity.status( HttpStatus.CREATED).body(newInvoice);
+        return ResponseEntity.status( HttpStatus.CREATED).body(newInvoice);
     }
 
     @PutMapping(value = "/{id}")

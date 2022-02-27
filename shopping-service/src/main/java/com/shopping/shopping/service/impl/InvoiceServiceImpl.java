@@ -1,6 +1,11 @@
 package com.shopping.shopping.service.impl;
 
+import com.shopping.shopping.client.CustomerClient;
+import com.shopping.shopping.client.ProductClient;
 import com.shopping.shopping.entity.InvoiceEntity;
+import com.shopping.shopping.entity.InvoiceItemEntity;
+import com.shopping.shopping.model.Customer;
+import com.shopping.shopping.model.Product;
 import com.shopping.shopping.repository.InvoiceItemsRepository;
 import com.shopping.shopping.repository.InvoiceRepository;
 import com.shopping.shopping.service.InvoiceService;
@@ -9,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -19,6 +25,10 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     private final InvoiceItemsRepository invoiceItemsRepository;
 
+    private final ProductClient productClient;
+
+    private final CustomerClient customerClient;
+
     @Override
     public List<InvoiceEntity> findAllInvoices() {
         return  invoiceRepository.findAll();
@@ -27,27 +37,31 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceEntity createInvoice(InvoiceEntity invoice) {
-        InvoiceEntity invoiceDB = invoiceRepository.findByNumberInvoice ( invoice.getNumberInvoice () );
-        if (invoiceDB !=null){
-            return  invoiceDB;
+        InvoiceEntity newInvoice = invoiceRepository.findByNumberInvoice ( invoice.getNumberInvoice () );
+        if (newInvoice !=null){
+            return newInvoice;
         }
         invoice.setState("CREATED");
-        return invoiceRepository.save(invoice);
+        newInvoice = invoiceRepository.save(invoice);
+        newInvoice.getItems().forEach(invoiceItemEntity -> {
+            productClient.updateStockProduct(invoiceItemEntity.getProductId(), invoiceItemEntity.getQuantity() * -1);
+        });
+        return newInvoice;
     }
 
 
     @Override
     public InvoiceEntity updateInvoice(InvoiceEntity invoice) {
-        InvoiceEntity invoiceDB = getInvoice(invoice.getId());
-        if (invoiceDB == null){
+        InvoiceEntity found = getInvoice(invoice.getId());
+        if (found == null){
             return  null;
         }
-        invoiceDB.setCustomerId(invoice.getCustomerId());
-        invoiceDB.setDescription(invoice.getDescription());
-        invoiceDB.setNumberInvoice(invoice.getNumberInvoice());
-        invoiceDB.getItems().clear();
-        invoiceDB.setItems(invoice.getItems());
-        return invoiceRepository.save(invoiceDB);
+        found.setCustomerId(invoice.getCustomerId());
+        found.setDescription(invoice.getDescription());
+        found.setNumberInvoice(invoice.getNumberInvoice());
+        found.getItems().clear();
+        found.setItems(invoice.getItems());
+        return invoiceRepository.save(found);
     }
 
 
@@ -63,6 +77,18 @@ public class InvoiceServiceImpl implements InvoiceService {
 
     @Override
     public InvoiceEntity getInvoice(Long id) {
-        return invoiceRepository.findById(id).orElse(null);
+
+        InvoiceEntity invoice = invoiceRepository.findById(id).orElse(null);
+        if(invoice != null) {
+            Customer customer = customerClient.getCustomer(invoice.getCustomerId()).getBody();
+            invoice.setCustomer(customer);
+            List<InvoiceItemEntity> itemList = invoice.getItems().stream().map(invoiceItemEntity -> {
+                Product product = productClient.getProduct(invoiceItemEntity.getProductId()).getBody();
+                invoiceItemEntity.setProduct(product);
+                return invoiceItemEntity;
+            }).collect(Collectors.toList());
+            invoice.setItems(itemList);
+        }
+        return invoice;
     }
 }
