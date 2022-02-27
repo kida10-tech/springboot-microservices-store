@@ -20,6 +20,7 @@ repositories {
 
 ext {
 	set('springCloudVersion', "2021.0.1")
+	set('springBootAdminVersion', "2.6.2")
 }
 
 dependencies {
@@ -41,7 +42,6 @@ dependencies {
 
 	implementation 'de.codecentric:spring-boot-admin-starter-client'
 
-
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -51,6 +51,7 @@ dependencies {
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+		mavenBom "de.codecentric:spring-boot-admin-dependencies:${springBootAdminVersion}"
 	}
 }
 
