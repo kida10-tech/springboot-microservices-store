@@ -4,6 +4,9 @@ spring:
   cloud:
     config:
       uri: http://localhost:8081
-      user:
-        name: root
+        username: root
         password: secret
+  boot:
+    admin:
+      client:
+        url: http://localhost:8086
